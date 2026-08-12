@@ -135,6 +135,25 @@
     ctx.fillStyle="#fff";ctx.font="700 13px -apple-system";ctx.textAlign="center";
     ctx.fillText("운동장",b.x+b.w/2,b.y+30);
   }
+
+  function drawLamp(ctx,x,y,t){
+    ctx.fillStyle="#39473f";ctx.fillRect(x-2,y,4,48);
+    ctx.fillStyle="#27332c";ctx.fillRect(x-9,y-3,18,5);
+    const glow=ctx.createRadialGradient(x,y,2,x,y,34);
+    glow.addColorStop(0,"rgba(255,244,189,.23)");
+    glow.addColorStop(1,"rgba(255,244,189,0)");
+    ctx.fillStyle=glow;ctx.fillRect(x-34,y-34,68,68);
+    ctx.fillStyle="rgba(255,244,189,.8)";ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.fill();
+  }
+  function drawBench(ctx,x,y){
+    ctx.fillStyle="#72533c";ctx.fillRect(x,y,54,8);ctx.fillRect(x,y+13,54,7);
+    ctx.fillStyle="#3d473f";ctx.fillRect(x+6,y+20,4,18);ctx.fillRect(x+44,y+20,4,18);
+  }
+  function drawBush(ctx,x,y,s=1){
+    ctx.fillStyle="#478148";
+    ctx.beginPath();ctx.arc(x,y,15*s,0,Math.PI*2);ctx.arc(x+18*s,y+2*s,13*s,0,Math.PI*2);ctx.arc(x+8*s,y-8*s,12*s,0,Math.PI*2);ctx.fill();
+  }
+
   function renderWorld(t,moving){
     const c=ctx.canvas,r=c.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);
     ctx.setTransform(dpr,0,0,dpr,0,0);
@@ -166,6 +185,9 @@
 
     round(ctx,420,700,280,190,34,"#5b9953","rgba(255,255,255,.16)");
     drawTree(ctx,420,650);drawTree(ctx,675,775);drawTree(ctx,1250,340);drawTree(ctx,760,330);
+    drawBush(ctx,455,805,.9);drawBush(ctx,620,820,.8);drawBush(ctx,1080,610,.85);
+    drawBench(ctx,520,790);
+    drawLamp(ctx,390,430,t);drawLamp(ctx,760,430,t);drawLamp(ctx,390,650,t);drawLamp(ctx,760,650,t);
 
     drawBuilding(ctx,buildings.home,"home",t);
     drawBuilding(ctx,buildings.school,"school",t);
@@ -238,35 +260,89 @@
     ctx.fillStyle=floor;ctx.fillRect(0,h*.70,w,h*.30);
 
     if(id==="home"){
-      // window
+      // ambient wall
+      const wall=ctx.createLinearGradient(0,0,0,h*.70);
+      wall.addColorStop(0,"#eee7d8");
+      wall.addColorStop(1,"#ddd1bd");
+      ctx.fillStyle=wall;ctx.fillRect(0,0,w,h*.70);
+
+      // subtle wall panels
+      ctx.strokeStyle="rgba(103,84,68,.055)";ctx.lineWidth=1;
+      for(let x=0;x<w;x+=42){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h*.70);ctx.stroke()}
+
+      // floor boards
+      const floor=ctx.createLinearGradient(0,h*.70,0,h);
+      floor.addColorStop(0,"#9a7e67");floor.addColorStop(1,"#735c4c");
+      ctx.fillStyle=floor;ctx.fillRect(0,h*.70,w,h*.30);
+      ctx.strokeStyle="rgba(60,44,35,.12)";
+      for(let y=h*.72;y<h;y+=24){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
+
+      // sunlight from window
+      const sun=ctx.createLinearGradient(20,90,w*.55,h*.78);
+      sun.addColorStop(0,"rgba(255,244,199,.18)");
+      sun.addColorStop(1,"rgba(255,244,199,0)");
+      ctx.fillStyle=sun;
+      ctx.beginPath();ctx.moveTo(36,120);ctx.lineTo(130,120);ctx.lineTo(w*.65,h*.84);ctx.lineTo(w*.31,h*.84);ctx.closePath();ctx.fill();
+
+      // window and curtains
       round(ctx,18,42,120,92,8,"#f3ede3");
-      const sky=ctx.createLinearGradient(0,50,0,125);sky.addColorStop(0,"#78b9df");sky.addColorStop(1,"#c8ebf7");
+      const sky=ctx.createLinearGradient(0,50,0,125);sky.addColorStop(0,"#6eb1dc");sky.addColorStop(1,"#c8ebf7");
       ctx.fillStyle=sky;ctx.fillRect(28,52,100,72);
       ctx.fillStyle="#f3ede3";ctx.fillRect(76,52,4,72);ctx.fillRect(28,86,100,4);
+      round(ctx,7,34,26,110,5,"#627f69");round(ctx,133,34,26,110,5,"#718d77");
 
       // bed
+      ctx.shadowColor="rgba(0,0,0,.16)";ctx.shadowBlur=14;ctx.shadowOffsetY=8;
       round(ctx,18,h-165,170,94,16,"#6f5644");
-      round(ctx,28,h-155,150,74,12,"#dce4f3");
-      round(ctx,38,h-144,60,30,10,"#fafbfc");
-      round(ctx,90,h-136,88,55,10,"#55799a");
+      ctx.shadowColor="transparent";ctx.shadowBlur=0;ctx.shadowOffsetY=0;
+      round(ctx,28,h-155,150,74,12,"#dde5f4");
+      round(ctx,38,h-144,60,30,10,"#fbfbfc");
+      const blanket=ctx.createLinearGradient(90,h-136,178,h-81);
+      blanket.addColorStop(0,"#6484a6");blanket.addColorStop(1,"#496b8d");
+      round(ctx,90,h-136,88,55,10,blanket);
 
       // desk
+      ctx.shadowColor="rgba(0,0,0,.14)";ctx.shadowBlur=12;ctx.shadowOffsetY=7;
       round(ctx,w-160,130,135,58,8,"#846043");
+      ctx.shadowColor="transparent";ctx.shadowBlur=0;ctx.shadowOffsetY=0;
       ctx.fillStyle="#694b35";ctx.fillRect(w-145,188,11,58);ctx.fillRect(w-48,188,11,58);
-      round(ctx,w-132,72,82,52,7,"#394347");round(ctx,w-126,78,70,40,4,"#132025");
 
-      // tv
-      round(ctx,w/2-70,106,140,80,9,"#394246");round(ctx,w/2-63,113,126,66,5,"#111817");
+      // monitor with glow
+      round(ctx,w-132,72,82,52,7,"#394347");
+      const screen=ctx.createLinearGradient(w-126,78,w-56,118);
+      screen.addColorStop(0,"#1f3d48");screen.addColorStop(1,"#0c171a");
+      round(ctx,w-126,78,70,40,4,screen);
+      const monitorGlow=ctx.createRadialGradient(w-90,98,5,w-90,98,62);
+      monitorGlow.addColorStop(0,"rgba(87,180,214,.08)");monitorGlow.addColorStop(1,"rgba(87,180,214,0)");
+      ctx.fillStyle=monitorGlow;ctx.fillRect(w-150,50,120,110);
+      round(ctx,w-112,194,54,46,13,"#35433c");
+
+      // TV
+      round(ctx,w/2-70,106,140,80,9,"#394246");
+      const tvg=ctx.createRadialGradient(w/2,145,8,w/2,145,70);
+      tvg.addColorStop(0,"rgba(131,255,79,.11)");tvg.addColorStop(1,"rgba(0,0,0,0)");
+      round(ctx,w/2-63,113,126,66,5,"#101816");
+      ctx.fillStyle=tvg;ctx.fillRect(w/2-63,113,126,66);
       round(ctx,w/2-78,186,156,44,7,"#6a503e");
+
+      // rug
+      const rug=ctx.createLinearGradient(w/2-100,h-125,w/2+100,h-30);
+      rug.addColorStop(0,"#6c8276");rug.addColorStop(1,"#465a50");
+      round(ctx,w/2-110,h-130,220,108,26,rug);
 
       // kitchen
       round(ctx,w-170,h-160,155,95,11,"#856d55");
       round(ctx,w-160,h-150,135,75,8,"#d0c2aa");
+      round(ctx,w-145,h-137,50,9,4,"#626a6c");
+      ctx.strokeStyle="#737b7d";ctx.lineWidth=4;
+      ctx.beginPath();ctx.arc(w-62,h-132,16,0,Math.PI*2);ctx.stroke();
 
       // shower
-      round(ctx,w-118,25,100,115,10,"rgba(145,210,235,.20)","rgba(255,255,255,.82)");
+      round(ctx,w-118,25,100,115,10,"rgba(145,210,235,.18)","rgba(255,255,255,.82)");
+      ctx.strokeStyle="#a8b1b4";ctx.lineWidth=4;
+      ctx.beginPath();ctx.arc(w-56,52,20,Math.PI,Math.PI*1.5);ctx.stroke();
 
-      drawCharacter(ctx,w/2,h-95,.80,state.player,t,false);
+      drawCharacter(ctx,w/2,h-95,.82,state.player,t,false);
     }else{
       if(id==="school"){
         round(ctx,w/2-120,55,240,90,8,"#385f45","#9a744d");

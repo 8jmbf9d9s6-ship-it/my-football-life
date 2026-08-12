@@ -37,60 +37,127 @@
 
     ctx.clearRect(0,0,br.width,br.height);
 
+    // cinematic night sky
     const sky=ctx.createLinearGradient(0,0,0,br.height);
-    sky.addColorStop(0,"#06110b");
-    sky.addColorStop(.45,"#123521");
+    sky.addColorStop(0,"#030806");
+    sky.addColorStop(.26,"#0a1d12");
+    sky.addColorStop(.56,"#173b23");
     sky.addColorStop(1,"#071009");
     ctx.fillStyle=sky;ctx.fillRect(0,0,br.width,br.height);
 
-    const haze=ctx.createRadialGradient(br.width*.5,br.height*.23,10,br.width*.5,br.height*.23,br.width*.62);
-    haze.addColorStop(0,"rgba(124,255,73,.15)");
-    haze.addColorStop(.5,"rgba(124,255,73,.035)");
-    haze.addColorStop(1,"rgba(124,255,73,0)");
-    ctx.fillStyle=haze;ctx.fillRect(0,0,br.width,br.height);
+    // moon / stadium haze
+    const mx=br.width*.72,my=br.height*.16;
+    const moon=ctx.createRadialGradient(mx,my,2,mx,my,72);
+    moon.addColorStop(0,"rgba(229,255,220,.24)");
+    moon.addColorStop(.18,"rgba(179,255,153,.10)");
+    moon.addColorStop(1,"rgba(124,255,73,0)");
+    ctx.fillStyle=moon;ctx.fillRect(0,0,br.width,br.height);
 
-    ctx.fillStyle="#0a160e";
+    // moving clouds
+    ctx.globalAlpha=.07;
+    for(let i=0;i<4;i++){
+      const x=((homeT*10 + i*120)%(br.width+170))-100;
+      const y=90+i*48;
+      ctx.fillStyle="#d8e7db";
+      ctx.beginPath();
+      ctx.ellipse(x,y,70,18,0,0,Math.PI*2);
+      ctx.ellipse(x+42,y+4,52,14,0,0,Math.PI*2);
+      ctx.fill();
+    }
+    ctx.globalAlpha=1;
+
+    // grandstand silhouette
+    ctx.fillStyle="#07120c";
     ctx.beginPath();
-    ctx.moveTo(0,br.height*.43);
-    ctx.quadraticCurveTo(br.width*.5,br.height*.32,br.width,br.height*.43);
-    ctx.lineTo(br.width,br.height*.63);
-    ctx.lineTo(0,br.height*.63);
+    ctx.moveTo(-20,br.height*.46);
+    ctx.quadraticCurveTo(br.width*.5,br.height*.31,br.width+20,br.height*.46);
+    ctx.lineTo(br.width+20,br.height*.64);
+    ctx.lineTo(-20,br.height*.64);
     ctx.closePath();ctx.fill();
 
-    for(let i=0;i<65;i++){
-      const x=(i/64)*br.width;
-      const y=br.height*.45+Math.sin(i*.8)*5;
-      ctx.fillStyle="rgba(255,238,176,"+(.05+.04*Math.sin(homeT*3+i))+")";
-      ctx.fillRect(x,y,2,2);
+    // roof band
+    ctx.strokeStyle="rgba(151,196,158,.12)";
+    ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.moveTo(0,br.height*.455);
+    ctx.quadraticCurveTo(br.width*.5,br.height*.325,br.width,br.height*.455);
+    ctx.stroke();
+
+    // animated spectators
+    for(let i=0;i<110;i++){
+      const x=(i/109)*br.width;
+      const y=br.height*.47+Math.sin(i*.71)*8+(i%4)*6;
+      const flash=.035+.055*Math.max(0,Math.sin(homeT*2.6+i*1.7));
+      ctx.fillStyle=`rgba(255,243,191,${flash})`;
+      ctx.fillRect(x,y,1.6,1.6);
     }
 
-    const beams=[
-      [br.width*.08,br.height*.25,br.width*.38,br.height*.62],
-      [br.width*.28,br.height*.23,br.width*.46,br.height*.64],
-      [br.width*.92,br.height*.25,br.width*.62,br.height*.62],
-      [br.width*.72,br.height*.23,br.width*.54,br.height*.64]
-    ];
-    beams.forEach(v=>{
-      const g=ctx.createLinearGradient(v[0],v[1],v[2],v[3]);
-      g.addColorStop(0,"rgba(255,248,210,.13)");
-      g.addColorStop(1,"rgba(255,248,210,0)");
-      ctx.strokeStyle=g;ctx.lineWidth=18;
-      ctx.beginPath();ctx.moveTo(v[0],v[1]);ctx.lineTo(v[2],v[3]);ctx.stroke();
+    // floodlight towers
+    const towers=[[br.width*.07,br.height*.265],[br.width*.28,br.height*.245],[br.width*.72,br.height*.245],[br.width*.93,br.height*.265]];
+    towers.forEach(([x,y],idx)=>{
+      ctx.fillStyle="rgba(16,25,19,.85)";
+      ctx.fillRect(x-2,y,4,95);
+      ctx.fillStyle="rgba(255,248,213,.75)";
+      for(let j=0;j<4;j++)ctx.fillRect(x-13+j*8,y-4,5,3);
+
+      const tx=br.width*(idx<2?.44:.56), ty=br.height*.66;
+      const beam=ctx.createLinearGradient(x,y,tx,ty);
+      beam.addColorStop(0,"rgba(255,247,208,.10)");
+      beam.addColorStop(1,"rgba(255,247,208,0)");
+      ctx.strokeStyle=beam;ctx.lineWidth=24;
+      ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(tx,ty);ctx.stroke();
     });
 
-    const pitch=ctx.createLinearGradient(0,br.height*.58,0,br.height);
-    pitch.addColorStop(0,"#173c20");pitch.addColorStop(1,"#0b1d11");
-    ctx.fillStyle=pitch;ctx.fillRect(0,br.height*.58,br.width,br.height*.42);
+    // pitch
+    const pitch=ctx.createLinearGradient(0,br.height*.59,0,br.height);
+    pitch.addColorStop(0,"#184223");pitch.addColorStop(1,"#07170d");
+    ctx.fillStyle=pitch;ctx.fillRect(0,br.height*.59,br.width,br.height*.41);
 
-    ctx.strokeStyle="rgba(255,255,255,.11)";ctx.lineWidth=1.5;
-    ctx.strokeRect(br.width*.12,br.height*.69,br.width*.76,br.height*.23);
-    ctx.beginPath();ctx.arc(br.width*.5,br.height*.805,37,0,Math.PI*2);ctx.stroke();
+    // mowing stripes
+    for(let i=0;i<10;i++){
+      ctx.fillStyle=i%2===0?"rgba(255,255,255,.018)":"rgba(0,0,0,.022)";
+      ctx.fillRect(i*br.width/10,br.height*.59,br.width/10,br.height*.41);
+    }
+
+    ctx.strokeStyle="rgba(255,255,255,.13)";ctx.lineWidth=1.4;
+    ctx.strokeRect(br.width*.11,br.height*.69,br.width*.78,br.height*.24);
+    ctx.beginPath();ctx.moveTo(br.width*.5,br.height*.69);ctx.lineTo(br.width*.5,br.height*.93);ctx.stroke();
+    ctx.beginPath();ctx.arc(br.width*.5,br.height*.81,39,0,Math.PI*2);ctx.stroke();
+
+    // animated ground mist
+    for(let i=0;i<5;i++){
+      const yy=br.height*(.58+i*.065);
+      const fog=ctx.createLinearGradient(0,yy,br.width,yy);
+      fog.addColorStop(0,"rgba(220,240,228,0)");
+      fog.addColorStop(.5,`rgba(220,240,228,${.014+.008*Math.sin(homeT+i)})`);
+      fog.addColorStop(1,"rgba(220,240,228,0)");
+      ctx.fillStyle=fog;ctx.fillRect(0,yy,br.width,28);
+    }
+
+    // particles
+    for(let i=0;i<32;i++){
+      const x=(i*47 + homeT*15*(1+i%3))%br.width;
+      const y=(i*83 + homeT*7*(1+i%4))%br.height;
+      ctx.fillStyle=`rgba(210,255,219,${.025+(i%5)*.009})`;
+      ctx.beginPath();ctx.arc(x,y,.7+(i%3)*.35,0,Math.PI*2);ctx.fill();
+    }
 
     // Home player
     pctx.clearRect(0,0,pr.width,pr.height);
     const save=MFL_SAVE.load();
     const player=save?.player || {name:"재환",age:15,position:"ST",skin:"#d5a079",hair:"#171717",shirt:"#2878ff"};
-    MFL_GAME.drawCharacter(pctx,pr.width*.48,pr.height*.74,1.05,player,homeT,false);
+
+    const glow=pctx.createRadialGradient(pr.width*.48,pr.height*.48,10,pr.width*.48,pr.height*.48,95);
+    glow.addColorStop(0,"rgba(131,255,79,.11)");
+    glow.addColorStop(1,"rgba(131,255,79,0)");
+    pctx.fillStyle=glow;pctx.fillRect(0,0,pr.width,pr.height);
+
+    MFL_GAME.drawCharacter(pctx,pr.width*.48,pr.height*.75,1.14,player,homeT,false);
+
+    // ball
+    const bx=pr.width*.77+Math.sin(homeT*1.5)*3, by=pr.height*.79;
+    pctx.fillStyle="#f2f3f1";pctx.beginPath();pctx.arc(bx,by,15,0,Math.PI*2);pctx.fill();
+    pctx.fillStyle="#1c1c1c";pctx.beginPath();pctx.arc(bx,by,5,0,Math.PI*2);pctx.fill();
 
     homeRAF=requestAnimationFrame(drawHome);
   }
