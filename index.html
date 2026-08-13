@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>My Football Life</title>
+<style>
+:root{--panel:#17253a;--panel2:#1e304a;--line:#2a3b56;--text:#f4f7fb;--muted:#9cafc6;--accent:#2f80ed;--good:#34c77b}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:#07101c;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif}
+.app{max-width:430px;margin:auto;min-height:100vh;background:linear-gradient(180deg,#0d1727,#0a1320);padding-bottom:82px}
+.top{padding:18px;border-bottom:1px solid rgba(255,255,255,.07)}
+.logo{font-size:23px;font-weight:900}.sub{font-size:11px;color:var(--muted);letter-spacing:1.5px}
+.screen{display:none;padding:16px}.screen.active{display:block}
+.card{background:var(--panel);border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:16px;margin-bottom:14px}
+.player{display:flex;gap:14px;align-items:center}
+.avatar{width:88px;height:112px;border-radius:15px;background:linear-gradient(#e9c9ac 0 34%,#e7e7e7 34% 100%);position:relative;overflow:hidden}
+.avatar:before{content:"";position:absolute;width:60px;height:34px;background:#2a2322;border-radius:50% 50% 35% 35%;left:14px;top:5px}
+.name{font-size:22px;font-weight:800}.meta{font-size:13px;color:var(--muted);margin-top:3px}.ovr{font-size:36px;font-weight:900;margin-top:8px}
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:14px}
+.stat{background:#102036;border-radius:12px;padding:10px;text-align:center}.stat b{display:block;font-size:19px;margin-top:3px}
+.row{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line)}.row:last-child{border-bottom:0}
+.btn{width:100%;border:0;border-radius:13px;padding:14px;margin-top:10px;background:var(--accent);color:white;font-size:15px;font-weight:800}
+.btn.good{background:var(--good);color:#07140e}
+.title{font-size:22px;font-weight:900;margin-bottom:12px}
+.dialogue{background:#0d1d30;border-radius:16px;padding:16px;margin-bottom:12px}
+.speaker{font-size:12px;color:#8fb7e9;font-weight:800;margin-bottom:8px}.line{font-size:17px;line-height:1.55}
+.choice{width:100%;text-align:left;background:var(--panel2);border:1px solid #38506e;color:#fff;padding:14px;border-radius:13px;margin-top:9px;font-size:14px}
+.result{margin-top:12px;padding:12px;border-radius:12px;background:#11243a;color:#cbd8e8;font-size:13px;line-height:1.5}
+.hidden{display:none}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(430px,100%);display:grid;grid-template-columns:repeat(4,1fr);background:#091321;border-top:1px solid rgba(255,255,255,.08);padding-bottom:env(safe-area-inset-bottom)}
+.nav button{border:0;background:none;color:#8398b0;padding:14px 2px;font-size:12px}.nav button.active{color:white;font-weight:800}
+.log{font-size:13px;color:#c2cfde;line-height:1.6}
+.badge{display:inline-block;background:#233b58;border-radius:999px;padding:6px 9px;font-size:12px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div class="logo">MY FOOTBALL LIFE</div>
+    <div class="sub">CAREER MODE</div>
+  </div>
+
+  <section id="home" class="screen active">
+    <div class="card">
+      <div class="player">
+        <div class="avatar"></div>
+        <div>
+          <div class="name">김재환</div>
+          <div class="meta">15세 · CAM · 충주고 축구부</div>
+          <div class="ovr">52 <span style="font-size:11px;color:#93a7bf">OVR</span></div>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat">감독 신뢰<b id="trust">50</b></div>
+        <div class="stat">자신감<b id="confidence">50</b></div>
+        <div class="stat">팀워크<b id="teamwork">50</b></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="row"><span>학교 수업</span><span>08:30</span></div>
+      <div class="row"><span>팀 훈련</span><span>16:00</span></div>
+      <div class="row"><span>감독 면담</span><span class="badge">오늘</span></div>
+      <button class="btn" onclick="go('dialogue')">감독과 대화하기</button>
+    </div>
+
+    <div class="card">
+      <div style="font-weight:800;margin-bottom:8px">최근 변화</div>
+      <div id="recent" class="log">아직 중요한 대화가 없습니다.</div>
+    </div>
+  </section>
+
+  <section id="dialogue" class="screen">
+    <div class="title">감독 면담</div>
+    <div id="dialogueBox">
+      <div class="dialogue">
+        <div class="speaker">감독</div>
+        <div class="line">이번 주말 지역대회에서 네가 선발로 뛸 수도 있다. 준비됐냐?</div>
+      </div>
+      <button class="choice" onclick="choose(1)">네. 기회만 주시면 보여드리겠습니다.</button>
+      <button class="choice" onclick="choose(2)">긴장되지만 최선을 다해보겠습니다.</button>
+      <button class="choice" onclick="choose(3)">제가 왜 선발 후보인지 궁금합니다.</button>
+    </div>
+
+    <div id="resultBox" class="hidden">
+      <div class="dialogue">
+        <div class="speaker">감독</div>
+        <div id="coachReply" class="line"></div>
+      </div>
+      <div id="effect" class="result"></div>
+      <button class="btn good" onclick="finishDialogue()">대화 종료</button>
+    </div>
+  </section>
+
+  <section id="player" class="screen">
+    <div class="title">선수</div>
+    <div class="card">
+      <div class="row"><span>성격</span><b id="personality">아직 정해지지 않음</b></div>
+      <div class="row"><span>감독 신뢰</span><b id="trust2">50</b></div>
+      <div class="row"><span>자신감</span><b id="confidence2">50</b></div>
+      <div class="row"><span>팀워크</span><b id="teamwork2">50</b></div>
+    </div>
+  </section>
+
+  <section id="schedule" class="screen">
+    <div class="title">일정</div>
+    <div class="card">
+      <div class="row"><span>월요일</span><span>팀 훈련</span></div>
+      <div class="row"><span>수요일</span><span>전술 훈련</span></div>
+      <div class="row"><span>금요일</span><span>감독 면담</span></div>
+      <div class="row"><span>토요일</span><span>지역대회</span></div>
+    </div>
+  </section>
+
+  <nav class="nav">
+    <button class="active" onclick="go('home',this)">홈</button>
+    <button onclick="go('player',this)">선수</button>
+    <button onclick="go('dialogue',this)">대화</button>
+    <button onclick="go('schedule',this)">일정</button>
+  </nav>
+</div>
+
+<script>
+const state={trust:50,confidence:50,teamwork:50,personality:"아직 정해지지 않음",done:false};
+
+function go(id,btn){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(btn){
+    document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  render();
+}
+
+function choose(n){
+  if(state.done)return;
+  let reply="", effect="", recent="";
+  if(n===1){
+    state.confidence+=4; state.trust+=2;
+    state.personality="자신감형";
+    reply="좋다. 그 자신감이 경기에서도 나오면 된다.";
+    effect="자신감 +4 · 감독 신뢰 +2";
+    recent="감독 면담에서 강한 자신감을 보였습니다.";
+  }else if(n===2){
+    state.teamwork+=2; state.trust+=3;
+    state.personality="성실형";
+    reply="긴장하는 건 당연하다. 준비한 것만 보여줘.";
+    effect="감독 신뢰 +3 · 팀워크 +2";
+    recent="감독에게 솔직한 태도를 보여 신뢰를 얻었습니다.";
+  }else{
+    state.confidence+=1; state.trust-=1;
+    state.personality="분석형";
+    reply="이유를 찾기보다 먼저 기회를 잡는 법도 배워야 한다.";
+    effect="자신감 +1 · 감독 신뢰 -1";
+    recent="감독에게 선발 이유를 직접 물었습니다.";
+  }
+  document.getElementById('coachReply').textContent=reply;
+  document.getElementById('effect').textContent=effect;
+  document.getElementById('recent').textContent=recent;
+  document.getElementById('dialogueBox').classList.add('hidden');
+  document.getElementById('resultBox').classList.remove('hidden');
+  state.done=true;
+  render();
+}
+
+function finishDialogue(){ go('home'); }
+
+function render(){
+  ['trust','confidence','teamwork'].forEach(k=>{
+    document.getElementById(k).textContent=state[k];
+    document.getElementById(k+'2').textContent=state[k];
+  });
+  document.getElementById('personality').textContent=state.personality;
+}
+render();
+</script>
+</body>
+</html>
