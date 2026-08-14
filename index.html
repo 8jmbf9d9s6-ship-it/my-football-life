@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>My Football Life</title>
+<style>
+:root{
+  --bg:#0a1220;--panel:#111d2f;--panel2:#18283e;--line:#2a3b55;
+  --text:#f7f9fc;--muted:#99aabd;--accent:#3178ff;--good:#2fc477
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:#070d16;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif}
+.app{max-width:430px;margin:auto;min-height:100vh;background:linear-gradient(180deg,#0e1828 0,#09121e 100%);padding-bottom:78px}
+.top{padding:17px 17px 12px;border-bottom:1px solid rgba(255,255,255,.06)}
+.brand{font-weight:900;font-size:22px;letter-spacing:.2px}.sub{font-size:10px;letter-spacing:1.7px;color:#8396ad;margin-top:2px}
+.screen{display:none;padding:14px}.screen.active{display:block}
+.card{background:linear-gradient(180deg,#142238,#101c2d);border:1px solid rgba(255,255,255,.055);border-radius:17px;padding:14px;margin-bottom:12px;box-shadow:0 10px 30px rgba(0,0,0,.14)}
+.title{font-size:23px;font-weight:900;margin:4px 0 4px}.desc{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:12px}
+.steps{display:flex;gap:5px;margin:8px 0 15px}.steps i{height:4px;flex:1;border-radius:8px;background:#233249}.steps i.on{background:var(--accent)}
+.creator{display:grid;grid-template-columns:1.12fr .88fr;gap:12px}
+.stage{
+  background:radial-gradient(circle at 50% 20%,#263b57 0,#17263b 45%,#101a29 100%);
+  border:1px solid rgba(255,255,255,.08);border-radius:17px;height:340px;position:relative;overflow:hidden
+}
+.stage:after{content:"";position:absolute;left:18%;right:18%;bottom:12px;height:16px;background:rgba(0,0,0,.28);filter:blur(8px);border-radius:50%}
+#playerSvg{position:absolute;width:100%;height:100%;left:0;top:0}
+.pane{display:flex;flex-direction:column;gap:9px}
+.group{background:#0e1b2c;border:1px solid rgba(255,255,255,.055);border-radius:13px;padding:10px}
+.group h3{font-size:12px;margin:0 0 8px;color:#aebdd0}
+.swatches,.thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.swatch{aspect-ratio:1;border-radius:9px;border:2px solid transparent;cursor:pointer}
+.swatch.active,.thumb.active{border-color:#6ba3ff;box-shadow:0 0 0 1px #6ba3ff inset}
+.thumb{height:42px;background:#1b2d45;border:2px solid transparent;border-radius:9px;color:#dbe5f2;font-size:10px;display:grid;place-items:center;cursor:pointer}
+label{display:block;color:#a7b7ca;font-size:12px;margin:10px 0 5px}
+input,select{width:100%;background:#0d1a2a;color:white;border:1px solid #304662;border-radius:11px;padding:12px;font-size:15px}
+.btn{width:100%;border:0;border-radius:12px;padding:13px;margin-top:10px;background:var(--accent);color:white;font-weight:800;font-size:15px}
+.btn.alt{background:#233853}.btn.good{background:var(--good);color:#06140d}
+.row{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}.row:last-child{border-bottom:0}
+.profile{display:flex;gap:13px;align-items:center}
+.avatarbox{width:110px;height:142px;border-radius:15px;overflow:hidden;background:#17273b;flex:0 0 auto}
+.avatarbox svg{width:100%;height:100%;transform:scale(1.45) translateY(8px);transform-origin:center 20%}
+.name{font-size:22px;font-weight:900}.meta{font-size:12px;color:#9cadc1;margin-top:4px}.ovr{font-size:38px;font-weight:900;margin-top:8px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:13px}.stat{background:#0e1b2b;border-radius:11px;padding:9px;text-align:center;font-size:11px;color:#9cb0c8}.stat b{display:block;font-size:18px;color:#fff;margin-top:3px}
+.dialogue{background:#0d1a2a;border:1px solid rgba(255,255,255,.06);border-radius:15px;padding:14px;margin-bottom:10px}.speaker{font-size:11px;color:#78a9ff;font-weight:800;margin-bottom:7px}.line{font-size:16px;line-height:1.55}
+.choice{width:100%;text-align:left;background:#182a42;border:1px solid #344e6d;color:white;border-radius:12px;padding:13px;margin-top:8px;font-size:14px}
+.result{padding:11px;border-radius:11px;background:#11243a;color:#c5d3e4;font-size:13px}
+.hidden{display:none!important}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(430px,100%);display:grid;grid-template-columns:repeat(4,1fr);background:#08111d;border-top:1px solid rgba(255,255,255,.07);padding-bottom:env(safe-area-inset-bottom)}
+.nav button{border:0;background:none;color:#7f92a9;padding:14px 0;font-size:12px}.nav button.active{color:white;font-weight:800}
+.lock{opacity:.48}
+@media(max-width:380px){.creator{grid-template-columns:1fr}.stage{height:310px}.pane{display:grid;grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div id="setup">
+    <div class="top"><div class="brand">MY FOOTBALL LIFE</div><div class="sub">CREATE YOUR PLAYER</div></div>
+
+    <section id="create1" class="screen active">
+      <div class="steps"><i class="on"></i><i></i><i></i></div>
+      <div class="title">내 선수 만들기</div>
+      <div class="desc">외형을 고르면 중앙 캐릭터에 바로 반영됩니다.</div>
+
+      <div class="creator">
+        <div class="stage">
+          <svg id="playerSvg" viewBox="0 0 220 360" aria-label="선수 미리보기">
+            <defs>
+              <linearGradient id="skinGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop id="skinTop" offset="0%" stop-color="#f2cfb0"/>
+                <stop id="skinBottom" offset="100%" stop-color="#dba985"/>
+              </linearGradient>
+              <linearGradient id="shirtGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop id="shirtTop" offset="0%" stop-color="#202a38"/>
+                <stop id="shirtBottom" offset="100%" stop-color="#111722"/>
+              </linearGradient>
+            </defs>
+
+            <!-- neck -->
+            <path d="M94 141 C96 157 95 169 88 181 C96 186 103 189 110 189 C117 189 124 186 132 181 C125 169 124 157 126 141 Z" fill="url(#skinGrad)"/>
+            <!-- ears -->
+            <ellipse cx="61" cy="104" rx="10" ry="16" fill="url(#skinGrad)"/>
+            <ellipse cx="159" cy="104" rx="10" ry="16" fill="url(#skinGrad)"/>
+
+            <!-- face -->
+            <path d="M70 59
+                     C83 38 136 37 150 61
+                     C160 79 158 117 145 139
+                     C136 155 124 164 110 165
+                     C96 164 84 155 75 139
+                     C62 117 60 80 70 59 Z" fill="url(#skinGrad)"/>
+
+            <!-- blush/shadow -->
+            <ellipse cx="79" cy="119" rx="13" ry="5" fill="#d99783" opacity=".16"/>
+            <ellipse cx="141" cy="119" rx="13" ry="5" fill="#d99783" opacity=".16"/>
+
+            <!-- eyebrows -->
+            <path id="browL" d="M78 87 Q91 79 101 86" stroke="#3a2d28" stroke-width="4" stroke-linecap="round" fill="none"/>
+            <path id="browR" d="M119 86 Q131 79 144 87" stroke="#3a2d28" stroke-width="4" stroke-linecap="round" fill="none"/>
+
+            <!-- eyes -->
+            <path d="M78 98 Q91 89 103 98 Q91 108 78 98 Z" fill="#fff" opacity=".96"/>
+            <path d="M117 98 Q129 89 142 98 Q129 108 117 98 Z" fill="#fff" opacity=".96"/>
+            <ellipse id="irisL" cx="92" cy="98" rx="5.5" ry="6.5" fill="#5a4638"/>
+            <ellipse id="irisR" cx="128" cy="98" rx="5.5" ry="6.5" fill="#5a4638"/>
+            <circle cx="92" cy="99" r="2.5" fill="#121212"/><circle cx="128" cy="99" r="2.5" fill="#121212"/>
+            <circle cx="90" cy="96" r="1.2" fill="#fff"/><circle cx="126" cy="96" r="1.2" fill="#fff"/>
+
+            <!-- nose -->
+            <path d="M110 99 C107 110 105 118 110 120 C114 121 116 119 118 118" stroke="#c58f76" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+            <!-- mouth -->
+            <path d="M96 135 Q110 141 124 135" stroke="#a45f61" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+            <path d="M101 136 Q110 139 119 136" stroke="#d58b89" stroke-width="1.2" fill="none"/>
+
+            <!-- hair base + styles -->
+            <g id="hairStyle1">
+              <path d="M66 73 C66 40 87 25 111 25 C138 25 157 43 154 75
+                       C144 60 139 58 132 55 C124 70 105 58 98 50
+                       C90 64 78 71 66 73 Z" id="hairFill1"/>
+              <path d="M68 69 C79 47 92 42 106 40" stroke="#6a5145" stroke-width="2" opacity=".22" fill="none"/>
+              <path d="M111 29 C124 37 135 46 140 58" stroke="#6a5145" stroke-width="2" opacity=".18" fill="none"/>
+            </g>
+            <g id="hairStyle2" class="hidden">
+              <path d="M64 78 C63 43 82 26 110 24 C140 23 160 42 157 77
+                       C148 64 142 60 137 57 C133 76 123 79 114 55
+                       C105 70 95 72 91 52 C82 69 74 76 64 78 Z" id="hairFill2"/>
+              <path d="M74 55 Q92 36 111 34" stroke="#6a5145" stroke-width="2" opacity=".22" fill="none"/>
+            </g>
+            <g id="hairStyle3" class="hidden">
+              <path d="M68 69 C69 43 86 31 110 31 C135 31 151 45 153 68
+                       C142 60 131 56 110 55 C91 55 80 60 68 69 Z" id="hairFill3"/>
+            </g>
+            <g id="hairStyle4" class="hidden">
+              <path d="M66 74 L72 44 L87 51 L92 31 L106 45 L119 28 L127 47 L145 38 L151 74
+                       C136 61 126 56 110 56 C94 56 82 62 66 74 Z" id="hairFill4"/>
+            </g>
+
+            <!-- athletic youth body -->
+            <path d="M47 196
+                     C61 180 79 173 95 170
+                     C101 169 106 168 110 168
+                     C114 168 119 169 125 170
+                     C141 173 159 180 173 196
+                     C167 211 164 226 160 244
+                     C155 258 151 269 147 278
+                     C136 282 124 284 110 284
+                     C96 284 84 282 73 278
+                     C69 269 65 258 60 244
+                     C56 226 53 211 47 196 Z" fill="url(#shirtGrad)"/>
+            <path d="M84 177 Q110 194 136 177" stroke="#d5dce6" stroke-width="5" fill="none"/>
+            <path d="M58 194 Q76 181 94 176" stroke="#313c4b" stroke-width="3" fill="none" opacity=".42"/>
+            <path d="M162 194 Q144 181 126 176" stroke="#313c4b" stroke-width="3" fill="none" opacity=".42"/>
+            <path d="M73 245 Q110 252 147 245" stroke="#0b121c" stroke-width="3" opacity=".16" fill="none"/>
+            <!-- arms -->
+            <path d="M52 201 C42 217 38 239 39 260 C40 274 44 285 50 293" stroke="url(#skinGrad)" stroke-width="17" stroke-linecap="round" fill="none"/>
+            <path d="M168 201 C178 217 182 239 181 260 C180 274 176 285 170 293" stroke="url(#skinGrad)" stroke-width="17" stroke-linecap="round" fill="none"/>
+            <!-- shorts / narrower waist and hips -->
+            <path d="M72 276
+                     C84 281 97 284 110 284
+                     C123 284 136 281 148 276
+                     L154 307
+                     C143 313 129 316 110 316
+                     C91 316 77 313 66 307 Z" fill="#111820"/>
+            <!-- thighs: athletic, not bulky -->
+            <path d="M70 306 C75 301 86 301 98 305 C102 317 102 334 99 352 L72 352 C70 337 69 321 70 306 Z" fill="url(#skinGrad)"/>
+            <path d="M122 305 C134 301 145 301 150 306 C151 321 150 337 148 352 L121 352 C118 334 118 317 122 305 Z" fill="url(#skinGrad)"/>
+            <!-- socks -->
+            <path d="M72 347 L99 347 L97 360 L74 360 Z" fill="#f3f5f8"/>
+            <path d="M121 347 L148 347 L146 360 L123 360 Z" fill="#f3f5f8"/>
+            <!-- number -->
+            <text x="110" y="248" text-anchor="middle" font-size="48" font-weight="900" fill="#f5f7fa">10</text>
+            <text x="110" y="210" text-anchor="middle" font-size="11" font-weight="800" fill="#dbe3ec">MFL</text>
+          </svg>
+        </div>
+
+        <div class="pane">
+          <div class="group">
+            <h3>피부톤</h3>
+            <div class="swatches">
+              <div class="swatch active" data-skin="#f2cfb0,#dba985" style="background:#efc7a6" onclick="setSkin(this)"></div>
+              <div class="swatch" data-skin="#ddb08d,#c28b68" style="background:#cf9b77" onclick="setSkin(this)"></div>
+              <div class="swatch" data-skin="#bd8768,#9a654b" style="background:#ad7457" onclick="setSkin(this)"></div>
+              <div class="swatch" data-skin="#936047,#704534" style="background:#80513d" onclick="setSkin(this)"></div>
+            </div>
+          </div>
+
+          <div class="group">
+            <h3>헤어스타일</h3>
+            <div class="thumbs">
+              <button class="thumb active" onclick="setHairStyle(1,this)">내추럴</button>
+              <button class="thumb" onclick="setHairStyle(2,this)">댄디</button>
+              <button class="thumb" onclick="setHairStyle(3,this)">숏컷</button>
+              <button class="thumb" onclick="setHairStyle(4,this)">스파이크</button>
+            </div>
+          </div>
+
+          <div class="group">
+            <h3>머리색</h3>
+            <div class="swatches">
+              <div class="swatch active" data-hair="#211d1c" style="background:#211d1c" onclick="setHairColor(this)"></div>
+              <div class="swatch" data-hair="#4a3025" style="background:#4a3025" onclick="setHairColor(this)"></div>
+              <div class="swatch" data-hair="#6e675f" style="background:#6e675f" onclick="setHairColor(this)"></div>
+              <div class="swatch" data-hair="#b4975d" style="background:#b4975d" onclick="setHairColor(this)"></div>
+            </div>
+          </div>
+
+          <div class="group">
+            <h3>상의</h3>
+            <div class="thumbs">
+              <button class="thumb active" onclick="setShirt('#202a38','#111722',this)">블랙</button>
+              <button class="thumb" onclick="setShirt('#e8ecf2','#c8d0da',this)">화이트</button>
+              <button class="thumb" onclick="setShirt('#2256a8','#153565',this)">블루</button>
+              <button class="thumb" onclick="setShirt('#b52632','#66151b',this)">레드</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <div class="row"><span>타투</span><b style="color:#91a1b5">성인 이후 해금</b></div>
+      </div>
+
+      <button class="btn" onclick="nextCreate(2)">다음</button>
+    </section>
+
+    <section id="create2" class="screen">
+      <div class="steps"><i class="on"></i><i class="on"></i><i></i></div>
+      <div class="title">기본 정보</div>
+      <div class="card">
+        <label>이름</label><input id="nameInput" value="김재환">
+        <label>포지션</label><select id="position"><option>CAM</option><option>ST</option><option>LW</option><option>RW</option><option>CM</option><option>CDM</option><option>CB</option><option>LB</option><option>RB</option><option>GK</option></select>
+        <label>주발</label><select id="foot"><option>오른발</option><option>왼발</option></select>
+        <label>키</label><input id="height" type="number" value="168">
+        <label>몸무게</label><input id="weight" type="number" value="58">
+      </div>
+      <button class="btn alt" onclick="nextCreate(1)">이전</button>
+      <button class="btn" onclick="nextCreate(3)">다음</button>
+    </section>
+
+    <section id="create3" class="screen">
+      <div class="steps"><i class="on"></i><i class="on"></i><i class="on"></i></div>
+      <div class="title">지역과 축구부</div>
+      <div class="card">
+        <label>지역</label><select id="region" onchange="refreshSchools()"></select>
+        <label>학교 구분</label><select id="level" onchange="refreshSchools()"><option value="middle">중학교</option><option value="high">고등학교</option></select>
+        <label>축구부</label><select id="school"></select>
+      </div>
+      <button class="btn alt" onclick="nextCreate(2)">이전</button>
+      <button class="btn good" onclick="startCareer()">커리어 시작</button>
+    </section>
+  </div>
+
+  <div id="game" class="hidden">
+    <div class="top"><div class="brand">MY FOOTBALL LIFE</div><div class="sub">CAREER MODE</div></div>
+
+    <section id="home" class="screen active">
+      <div class="card">
+        <div class="profile">
+          <div class="avatarbox" id="avatarClone"></div>
+          <div>
+            <div id="playerName" class="name"></div>
+            <div id="playerMeta" class="meta"></div>
+            <div class="ovr">52 <span style="font-size:11px;color:#8ea0b5">OVR</span></div>
+          </div>
+        </div>
+        <div class="stats">
+          <div class="stat">감독 신뢰<b id="trust">50</b></div>
+          <div class="stat">자신감<b id="confidence">50</b></div>
+          <div class="stat">팀워크<b id="teamwork">50</b></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="row"><span>학교 수업</span><span>08:30</span></div>
+        <div class="row"><span>팀 훈련</span><span>16:00</span></div>
+        <div class="row"><span>감독 면담</span><span>오늘</span></div>
+        <button class="btn" onclick="go('dialogue')">감독과 대화하기</button>
+      </div>
+    </section>
+
+    <section id="player" class="screen">
+      <div class="title">선수</div>
+      <div class="card">
+        <div class="row"><span>학교</span><b id="schoolInfo"></b></div>
+        <div class="row"><span>지역</span><b id="regionInfo"></b></div>
+        <div class="row"><span>주발</span><b id="footInfo"></b></div>
+        <div class="row"><span>키 / 몸무게</span><b id="bodyInfo"></b></div>
+        <div class="row"><span>성격</span><b id="personality">미정</b></div>
+      </div>
+      <div class="card lock"><div class="row"><span>타투</span><b>성인 이후 해금</b></div></div>
+    </section>
+
+    <section id="dialogue" class="screen">
+      <div class="title">감독 면담</div>
+      <div id="dialogueBox">
+        <div class="dialogue"><div class="speaker">감독</div><div class="line">이번 주말 지역대회에서 네가 선발로 뛸 수도 있다. 준비됐냐?</div></div>
+        <button class="choice" onclick="choose(1)">네. 기회만 주시면 보여드리겠습니다.</button>
+        <button class="choice" onclick="choose(2)">긴장되지만 최선을 다해보겠습니다.</button>
+        <button class="choice" onclick="choose(3)">제가 왜 선발 후보인지 궁금합니다.</button>
+      </div>
+      <div id="resultBox" class="hidden">
+        <div class="dialogue"><div class="speaker">감독</div><div id="coachReply" class="line"></div></div>
+        <div id="effect" class="result"></div>
+        <button class="btn good" onclick="finishDialogue()">대화 종료</button>
+      </div>
+    </section>
+
+    <section id="schedule" class="screen">
+      <div class="title">일정</div>
+      <div class="card">
+        <div class="row"><span>월요일</span><span>팀 훈련</span></div>
+        <div class="row"><span>수요일</span><span>전술 훈련</span></div>
+        <div class="row"><span>금요일</span><span>감독 면담</span></div>
+        <div class="row"><span>토요일</span><span>지역대회</span></div>
+      </div>
+    </section>
+
+    <nav class="nav">
+      <button class="active" onclick="go('home',this)">홈</button>
+      <button onclick="go('player',this)">선수</button>
+      <button onclick="go('dialogue',this)">대화</button>
+      <button onclick="go('schedule',this)">일정</button>
+    </nav>
+  </div>
+</div>
+
+<script>
+const regions=["서울","부산","대구","인천","광주","대전","울산","세종","경기","강원","충북","충남","전북","전남","경북","경남","제주"];
+const schools={
+"서울":{middle:["서울중 축구부","용산중 축구부","동북중 축구부"],high:["서울고 축구부","경희고 축구부","중동고 축구부"]},
+"부산":{middle:["부산중 축구부","동래중 축구부","해운대중 축구부"],high:["부산고 축구부","동래고 축구부","부경고 축구부"]},
+"대구":{middle:["대구중 축구부","달성중 축구부","수성중 축구부"],high:["대구고 축구부","청구고 축구부","현풍고 축구부"]},
+"인천":{middle:["인천중 축구부","부평동중 축구부","남동중 축구부"],high:["인천고 축구부","부평고 축구부","대건고 축구부"]},
+"광주":{middle:["광주중 축구부","광산중 축구부","서구중 축구부"],high:["광주고 축구부","금호고 축구부","숭의과학기술고 축구부"]},
+"대전":{middle:["대전중 축구부","유성중 축구부","동신중 축구부"],high:["대전고 축구부","충남기계공고 축구부","유성생명과학고 축구부"]},
+"울산":{middle:["울산중 축구부","학성중 축구부","현대중 축구부"],high:["울산고 축구부","학성고 축구부","현대고 축구부"]},
+"세종":{middle:["세종중 축구부","조치원중 축구부","새롬중 축구부"],high:["세종고 축구부","조치원고 축구부","한솔고 축구부"]},
+"경기":{middle:["수원중 축구부","안양중 축구부","성남중 축구부"],high:["수원고 축구부","안양공고 축구부","풍생고 축구부"]},
+"강원":{middle:["춘천중 축구부","강릉중 축구부","원주중 축구부"],high:["춘천고 축구부","강릉중앙고 축구부","원주고 축구부"]},
+"충북":{middle:["충주중 축구부","청주중 축구부","제천중 축구부"],high:["충주상고 축구부","청주대성고 축구부","제천제일고 축구부"]},
+"충남":{middle:["천안중 축구부","아산중 축구부","논산중 축구부"],high:["천안제일고 축구부","아산고 축구부","논산고 축구부"]},
+"전북":{middle:["전주중 축구부","군산중 축구부","익산중 축구부"],high:["전주영생고 축구부","군산제일고 축구부","이리고 축구부"]},
+"전남":{middle:["목포중 축구부","순천중 축구부","광양중 축구부"],high:["광양제철고 축구부","목포공고 축구부","순천고 축구부"]},
+"경북":{middle:["포항중 축구부","경주중 축구부","구미중 축구부"],high:["포항제철고 축구부","경주정보고 축구부","오상고 축구부"]},
+"경남":{middle:["창원중 축구부","김해중 축구부","진주중 축구부"],high:["창원기계공고 축구부","김해생명과학고 축구부","진주고 축구부"]},
+"제주":{middle:["제주중 축구부","서귀포중 축구부","오현중 축구부"],high:["제주제일고 축구부","서귀포고 축구부","오현고 축구부"]}
+};
+const state={trust:50,confidence:50,teamwork:50,personality:"미정",age:15,done:false};
+
+function nextCreate(n){
+  document.querySelectorAll("#setup .screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById("create"+n).classList.add("active");
+}
+function setSkin(el){
+  document.querySelectorAll("[data-skin]").forEach(x=>x.classList.remove("active"));el.classList.add("active");
+  const [a,b]=el.dataset.skin.split(",");
+  skinTop.setAttribute("stop-color",a);skinBottom.setAttribute("stop-color",b);
+  state.skin=[a,b];
+}
+function setHairStyle(n,el){
+  document.querySelectorAll(".group .thumb").forEach(x=>{if(x.closest(".group").querySelector("h3").textContent==="헤어스타일")x.classList.remove("active")});
+  el.classList.add("active");
+  [1,2,3,4].forEach(i=>document.getElementById("hairStyle"+i).classList.toggle("hidden",i!==n));
+  state.hairStyle=n;
+}
+function setHairColor(el){
+  document.querySelectorAll("[data-hair]").forEach(x=>x.classList.remove("active"));el.classList.add("active");
+  [1,2,3,4].forEach(i=>document.getElementById("hairFill"+i).setAttribute("fill",el.dataset.hair));
+  state.hairColor=el.dataset.hair;
+}
+function setShirt(a,b,el){
+  const group=el.closest(".group");group.querySelectorAll(".thumb").forEach(x=>x.classList.remove("active"));el.classList.add("active");
+  shirtTop.setAttribute("stop-color",a);shirtBottom.setAttribute("stop-color",b);state.shirt=[a,b];
+}
+function init(){
+  state.skin=["#f2cfb0","#dba985"];state.hairStyle=1;state.hairColor="#211d1c";state.shirt=["#202a38","#111722"];
+  setHairColor(document.querySelector("[data-hair]"));
+  regions.forEach(r=>{const o=document.createElement("option");o.value=r;o.textContent=r;if(r==="충북")o.selected=true;region.appendChild(o)});
+  refreshSchools();
+}
+function refreshSchools(){
+  school.innerHTML="";
+  schools[region.value][level.value].forEach(s=>{const o=document.createElement("option");o.value=s;o.textContent=s;school.appendChild(o)});
+}
+function startCareer(){
+  state.name=nameInput.value.trim()||"김재환";state.position=position.value;state.foot=foot.value;
+  state.height=height.value;state.weight=weight.value;state.region=region.value;state.school=school.value;
+  state.age=level.value==="middle"?15:17;
+  setup.classList.add("hidden");game.classList.remove("hidden");
+  playerName.textContent=state.name;playerMeta.textContent=`${state.age}세 · ${state.position} · ${state.school}`;
+  schoolInfo.textContent=state.school;regionInfo.textContent=state.region;footInfo.textContent=state.foot;bodyInfo.textContent=`${state.height}cm / ${state.weight}kg`;
+  const clone=playerSvg.cloneNode(true);clone.removeAttribute("id");avatarClone.innerHTML="";avatarClone.appendChild(clone);
+}
+function go(id,btn){
+  document.querySelectorAll("#game .screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active");
+  if(btn){document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));btn.classList.add("active")}
+}
+function choose(n){
+  if(state.done)return;
+  let reply="",effect="";
+  if(n===1){state.confidence+=4;state.trust+=2;state.personality="자신감형";reply="좋다. 그 자신감이 경기에서도 나오면 된다.";effect="자신감 +4 · 감독 신뢰 +2"}
+  else if(n===2){state.teamwork+=2;state.trust+=3;state.personality="성실형";reply="긴장하는 건 당연하다. 준비한 것만 보여줘.";effect="감독 신뢰 +3 · 팀워크 +2"}
+  else{state.confidence+=1;state.trust-=1;state.personality="분석형";reply="이유를 찾기보다 먼저 기회를 잡는 법도 배워야 한다.";effect="자신감 +1 · 감독 신뢰 -1"}
+  coachReply.textContent=reply;document.getElementById("effect").textContent=effect;dialogueBox.classList.add("hidden");resultBox.classList.remove("hidden");
+  personality.textContent=state.personality;trust.textContent=state.trust;confidence.textContent=state.confidence;teamwork.textContent=state.teamwork;state.done=true;
+}
+function finishDialogue(){go("home")}
+init();
+</script>
+</body>
+</html>
