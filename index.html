@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>My Football Life</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;background:#02060a;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif}
+.game{position:relative;width:min(100vw,430px);height:100vh;margin:0 auto;overflow:hidden;background:#07111c url("title_bg.png") center center/cover no-repeat}
+.overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.01),rgba(0,0,0,.14))}
+.menu{position:absolute;left:50%;bottom:12%;transform:translateX(-50%);width:68%;display:flex;flex-direction:column;gap:10px;z-index:2}
+.menu button{height:50px;border:2px solid rgba(220,235,255,.65);border-radius:4px;background:rgba(8,18,31,.82);color:#fff;font-weight:900;font-size:16px;box-shadow:0 4px 0 rgba(0,0,0,.65),inset 0 0 0 2px rgba(0,0,0,.35);backdrop-filter:blur(2px)}
+.menu button.primary{background:linear-gradient(#367fdd,#1a5cae);border-color:#8fc4ff}.menu button:disabled{opacity:.42}
+.settingsBtn{position:absolute;right:18px;top:18px;z-index:3;width:52px;height:44px;border:2px solid #758aa3;border-radius:4px;background:rgba(8,18,31,.78);color:white;font-size:20px;font-weight:900}
+.modalBg{display:none;position:absolute;inset:0;z-index:10;background:rgba(0,0,0,.72);align-items:center;justify-content:center;padding:22px}.modalBg.show{display:flex}
+.modal{width:100%;background:#091521;border:2px solid #557999;border-radius:4px;color:#fff;padding:16px;box-shadow:5px 5px 0 rgba(0,0,0,.65)}
+.modal h2{margin:0 0 12px;font-size:18px}.row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #29435d}
+.toggle{border:1px solid #6d8dad;background:#10243a;color:#fff;padding:7px 12px;font-weight:800}.close{width:100%;margin-top:14px;padding:12px;border:1px solid #76a9e3;background:#1f63b1;color:#fff;font-weight:900}
+.notice{display:none;position:absolute;left:18px;right:18px;top:50%;transform:translateY(-50%);z-index:11;background:#081522;border:2px solid #5c81a4;color:white;padding:18px;text-align:center}
+.notice.show{display:block}.notice b{display:block;font-size:18px;margin-bottom:8px}.notice p{font-size:13px;line-height:1.5;color:#c1d0df}
+.notice button{width:100%;padding:11px;border:1px solid #77a8de;background:#1f63b1;color:#fff;font-weight:900}
+</style>
+</head>
+<body>
+<div class="game">
+  <div class="overlay"></div>
+  <button class="settingsBtn" onclick="openSettings()">⚙</button>
+  <div class="menu">
+    <button class="primary" onclick="newGame()">새 게임</button>
+    <button disabled>이어하기</button>
+    <button onclick="openSettings()">설정</button>
+  </div>
+  <div id="settings" class="modalBg">
+    <div class="modal">
+      <h2>설정</h2>
+      <div class="row"><span>BGM</span><button class="toggle" onclick="toggle(this)">ON</button></div>
+      <div class="row"><span>효과음</span><button class="toggle" onclick="toggle(this)">ON</button></div>
+      <div class="row"><span>진동</span><button class="toggle" onclick="toggle(this)">ON</button></div>
+      <button class="close" onclick="closeSettings()">닫기</button>
+    </div>
+  </div>
+  <div id="notice" class="notice">
+    <b>새 게임</b>
+    <p>다음 단계에서 선수 생성 → 출생지역 → 실제 중학교 축구부 선택으로 연결됩니다.</p>
+    <button onclick="closeNotice()">확인</button>
+  </div>
+</div>
+<script>
+function openSettings(){document.getElementById('settings').classList.add('show')}
+function closeSettings(){document.getElementById('settings').classList.remove('show')}
+function toggle(el){el.textContent=el.textContent==='ON'?'OFF':'ON'}
+function newGame(){document.getElementById('notice').classList.add('show')}
+function closeNotice(){document.getElementById('notice').classList.remove('show')}
+</script>
+</body>
+</html>
