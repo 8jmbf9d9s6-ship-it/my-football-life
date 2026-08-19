@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>My Football Life</title>
+<style>
+:root{
+  --bg:#06101a;
+  --panel:#0d1a28;
+  --panel2:#13263a;
+  --line:#31506c;
+  --text:#eef7ff;
+  --muted:#91a8bc;
+  --blue:#2f7fe9;
+  --green:#33b96b;
+  --yellow:#e4b63e;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:#02060a;color:var(--text);font-family:"Courier New",monospace}
+body{
+  min-height:100vh;
+  background:
+    linear-gradient(rgba(255,255,255,.014) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.014) 1px,transparent 1px),
+    #02060a;
+  background-size:4px 4px;
+}
+.app{
+  max-width:430px;
+  margin:0 auto;
+  min-height:100vh;
+  background:#06101a;
+  padding-bottom:72px;
+}
+.topbar{
+  height:56px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 14px;
+  background:#08131f;
+  border-bottom:2px solid #1f354b;
+  box-shadow:0 2px 0 #010407;
+}
+.brand{
+  font-size:15px;
+  font-weight:900;
+  letter-spacing:.5px;
+}
+.date{
+  font-size:10px;
+  color:#9aafc1;
+}
+.pixel-card{
+  margin:12px;
+  background:var(--panel);
+  border:2px solid var(--line);
+  box-shadow:
+    0 0 0 2px #02060a,
+    4px 4px 0 #010305;
+  border-radius:3px;
+}
+.card-title{
+  padding:9px 10px;
+  background:#091522;
+  border-bottom:2px solid #27435d;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.8px;
+}
+.profile{
+  padding:12px;
+}
+.profile-top{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+.name{
+  font-size:20px;
+  font-weight:900;
+  margin-bottom:4px;
+}
+.meta{
+  font-size:10px;
+  line-height:1.5;
+  color:var(--muted);
+}
+.ovrbox{
+  min-width:72px;
+  text-align:center;
+  background:#07131f;
+  border:2px solid #365c7c;
+  padding:8px 4px;
+  align-self:flex-start;
+}
+.ovrlabel{
+  font-size:9px;
+  color:#8299ad;
+}
+.ovr{
+  font-size:28px;
+  font-weight:900;
+  color:#f0c84d;
+}
+.bars{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px 10px;
+  margin-top:13px;
+}
+.statline{
+  font-size:9px;
+}
+.statrow{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:4px;
+}
+.bar{
+  height:8px;
+  background:#07111b;
+  border:1px solid #21374d;
+}
+.fill{
+  height:100%;
+  background:var(--green);
+}
+.fill.blue{background:var(--blue)}
+.fill.yellow{background:var(--yellow)}
+.schedule{
+  padding:10px;
+}
+.schedule-row{
+  display:grid;
+  grid-template-columns:54px 1fr 60px;
+  align-items:center;
+  min-height:44px;
+  border-bottom:1px solid #20394f;
+  font-size:10px;
+}
+.schedule-row:last-child{border-bottom:none}
+.schedule-row.current{
+  margin:0 -3px;
+  padding:0 6px;
+  background:#0c2a1b;
+  outline:1px solid #216b42;
+}
+.time{
+  font-weight:900;
+  color:#79a7d8;
+}
+.place{
+  text-align:right;
+  color:#8da4b8;
+}
+.status-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  padding:10px;
+}
+.status{
+  background:#091624;
+  border:1px solid #2b4661;
+  padding:9px 4px;
+  text-align:center;
+}
+.status-name{
+  font-size:8px;
+  color:#91a9bd;
+}
+.status-value{
+  margin-top:3px;
+  font-size:16px;
+  font-weight:900;
+}
+.news{
+  padding:10px;
+  font-size:10px;
+  line-height:1.6;
+  color:#b9cad8;
+}
+.news b{
+  color:#f2c94c;
+}
+.primary{
+  width:calc(100% - 24px);
+  height:46px;
+  margin:4px 12px 12px;
+  border:2px solid #5ba0e5;
+  background:#135db2;
+  color:#fff;
+  font-family:inherit;
+  font-weight:900;
+  font-size:12px;
+  box-shadow:
+    inset 0 0 0 2px #0b3d7a,
+    3px 3px 0 #02060a;
+}
+.primary:active{
+  transform:translate(2px,2px);
+  box-shadow:inset 0 0 0 2px #0b3d7a,1px 1px 0 #02060a;
+}
+.bottom-nav{
+  position:fixed;
+  left:50%;
+  bottom:0;
+  transform:translateX(-50%);
+  width:min(430px,100%);
+  height:64px;
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  background:#07111c;
+  border-top:2px solid #29445f;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.nav-btn{
+  border:none;
+  background:none;
+  color:#7890a6;
+  font-family:inherit;
+  font-size:9px;
+}
+.nav-btn.active{
+  color:#fff;
+  background:#0d2034;
+}
+.icon{
+  width:20px;
+  height:20px;
+  margin:0 auto 4px;
+  position:relative;
+}
+.icon.home{
+  background:
+    linear-gradient(45deg,transparent 40%,#8fb8da 41% 59%,transparent 60%) 2px 0/16px 11px no-repeat,
+    linear-gradient(#8fb8da,#8fb8da) 5px 8px/10px 10px no-repeat;
+}
+.icon.train{
+  background:
+    linear-gradient(#8fb8da,#8fb8da) 2px 7px/16px 5px no-repeat,
+    linear-gradient(#8fb8da,#8fb8da) 0 4px/4px 11px no-repeat,
+    linear-gradient(#8fb8da,#8fb8da) 16px 4px/4px 11px no-repeat;
+}
+.icon.schedule{border:3px solid #8fb8da}
+.icon.schedule:before{
+  content:"";
+  position:absolute;
+  left:2px;right:2px;top:4px;
+  border-top:2px solid #8fb8da;
+}
+.icon.chat{border:3px solid #8fb8da}
+.icon.chat:after{
+  content:"";
+  position:absolute;
+  bottom:-5px;left:2px;
+  border:4px solid transparent;
+  border-top-color:#8fb8da;
+}
+.icon.match{border:3px solid #8fb8da;border-radius:50%}
+.icon.match:before{
+  content:"";
+  position:absolute;
+  width:5px;height:5px;
+  left:5px;top:5px;
+  background:#8fb8da;
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <div class="brand">MY FOOTBALL LIFE</div>
+    <div class="date">2026.03.02 MON</div>
+  </div>
+
+  <div class="pixel-card">
+    <div class="card-title">PLAYER STATUS</div>
+    <div class="profile">
+      <div class="profile-top">
+        <div>
+          <div class="name">김재환</div>
+          <div class="meta">15세 · CAM · 오른발</div>
+          <div class="meta">충주중 축구부</div>
+        </div>
+        <div class="ovrbox">
+          <div class="ovrlabel">OVR</div>
+          <div class="ovr">52</div>
+        </div>
+      </div>
+
+      <div class="bars">
+        <div class="statline">
+          <div class="statrow"><span>체력</span><span>82</span></div>
+          <div class="bar"><div class="fill" style="width:82%"></div></div>
+        </div>
+        <div class="statline">
+          <div class="statrow"><span>컨디션</span><span>70</span></div>
+          <div class="bar"><div class="fill yellow" style="width:70%"></div></div>
+        </div>
+        <div class="statline">
+          <div class="statrow"><span>자신감</span><span>65</span></div>
+          <div class="bar"><div class="fill blue" style="width:65%"></div></div>
+        </div>
+        <div class="statline">
+          <div class="statrow"><span>감독 신뢰</span><span>50</span></div>
+          <div class="bar"><div class="fill" style="width:50%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pixel-card">
+    <div class="card-title">TODAY</div>
+    <div class="schedule">
+      <div class="schedule-row current">
+        <div class="time">15:30</div>
+        <div>팀 훈련</div>
+        <div class="place">운동장</div>
+      </div>
+      <div class="schedule-row">
+        <div class="time">17:30</div>
+        <div>개인 훈련</div>
+        <div class="place">훈련장</div>
+      </div>
+      <div class="schedule-row">
+        <div class="time">18:30</div>
+        <div>감독 면담</div>
+        <div class="place">코치실</div>
+      </div>
+      <div class="schedule-row">
+        <div class="time">20:00</div>
+        <div>휴식</div>
+        <div class="place">집</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pixel-card">
+    <div class="card-title">CURRENT STATUS</div>
+    <div class="status-grid">
+      <div class="status">
+        <div class="status-name">체력</div>
+        <div class="status-value">82</div>
+      </div>
+      <div class="status">
+        <div class="status-name">자신감</div>
+        <div class="status-value">65</div>
+      </div>
+      <div class="status">
+        <div class="status-name">팀워크</div>
+        <div class="status-value">58</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pixel-card">
+    <div class="card-title">NEWS</div>
+    <div class="news">
+      <b>감독:</b> 이번 주말 지역대회 선발 명단은 오늘 훈련 결과를 보고 결정하겠다.
+    </div>
+  </div>
+
+  <button class="primary" onclick="alert('홈 화면 테스트 버전입니다.')">오늘 일정 진행</button>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn active">
+      <div class="icon home"></div>
+      홈
+    </button>
+    <button class="nav-btn">
+      <div class="icon train"></div>
+      훈련
+    </button>
+    <button class="nav-btn">
+      <div class="icon schedule"></div>
+      일정
+    </button>
+    <button class="nav-btn">
+      <div class="icon chat"></div>
+      대화
+    </button>
+    <button class="nav-btn">
+      <div class="icon match"></div>
+      경기
+    </button>
+  </nav>
+
+</div>
+</body>
+</html>
